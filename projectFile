@@ -1,0 +1,17 @@
+LMSAPI/
+│── public/
+│   └── index.php           # Entry point (handles all requests)
+│
+│── src/
+│   ├── config/
+│   │   └── database.php    # DB connection
+│   ├── controllers/
+│   │   └── IncidentController.php
+│   ├── models/
+│   │   └── Incident.php
+│   └── routes/
+│       └── api.php         # Define endpoints
+│
+│── logs/
+│── vendor/                 # (if using Composer packages)
+│── .env                    # Environment variables
