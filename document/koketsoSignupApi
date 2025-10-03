@@ -1,42 +1,65 @@
- API Documentation: User Registration
- 
- Endpoint
- URL: http://localhost/LMSAPI/public/koketsosign.php Method: POST Content-Type: application/json Access-Control:
+# API Documentation: User Registration
 
-Access-Control-Allow-Origin: yes
+## Endpoint
 
-Access-Control-Allow-Methods: POST
+- **URL:** `http://localhost/LMSAPI/public/koketsosign.php`
+- **Method:** `POST`
+- **Content-Type:** `application/json`
 
-Request Body
+### Access Control
+
+- **Access-Control-Allow-Origin:** yes
+- **Access-Control-Allow-Methods:** POST
+
+---
+
+## Request Body
+
 Send a JSON payload with the following fields:
 
-json
+```json
 {
   "email": "john.doe@example.com",
   "password": "securePassword123",
   "first_name": "John",
   "last_name": "Doe"
 }
+```
 
-Field	Type	Required	Description
+### Fields
 
-email	string	✅	Must be a unique email address
-password	string	✅	Will be hashed before storage
-first_name	string	✅	User's first name
-last_name	string	✅	User's last name
+| Field       | Type   | Required | Description                      |
+|-------------|--------|----------|----------------------------------|
+| email       | string | ✅       | Must be a unique email address   |
+| password    | string | ✅       | Will be hashed before storage    |
+| first_name  | string | ✅       | User's first name                |
+| last_name   | string | ✅       | User's last name                 |
 
-✅ Success Response
-Status Code: 201 Created Body:
+---
 
-json
+## ✅ Success Response
+
+**Status Code:** `201 Created`
+
+**Body:**
+
+```json
 {
   "message": "user created successfully"
 }
-❌ Error Responses
-1. Missing Fields
-Status Code: 400 Bad Request Body:
+```
 
-json
+---
+
+## ❌ Error Responses
+
+### 1. Missing Fields
+
+**Status Code:** `400 Bad Request`
+
+**Body:**
+
+```json
 {
   "message": "Incomplete data.",
   "missing_fields": {
@@ -47,26 +70,42 @@ json
   },
   "error": "400 Bad Request"
 }
-2. Duplicate Email
-Status Code: 400 Bad Request Body:
+```
 
-json
+### 2. Duplicate Email
+
+**Status Code:** `400 Bad Request`
+
+**Body:**
+
+```json
 {
   "message": "email already exists"
 }
-3. Server Error
-Status Code: 503 Service Unavailable Body:
+```
 
-json
+### 3. Server Error
+
+**Status Code:** `503 Service Unavailable`
+
+**Body:**
+
+```json
 {
   "message": "Unable to register user."
 }
- Security Notes
-Passwords are hashed using password_hash() with PASSWORD_DEFAULT.
+```
 
-Email uniqueness is enforced via a pre-check query before insertion.
+---
 
- Implementation Notes
-Ensure your users table has a UNIQUE constraint on the email field.
+## 🔒 Security Notes
 
-The API uses PDO for secure database interaction with prepared statements.
+- Passwords are hashed using `password_hash()` with `PASSWORD_DEFAULT`
+- Email uniqueness is enforced via a pre-check query before insertion
+
+---
+
+## 📝 Implementation Notes
+
+- Ensure your `users` table has a `UNIQUE` constraint on the `email` field
+- The API uses PDO for secure database interaction with prepared statements
