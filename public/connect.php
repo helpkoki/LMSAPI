@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db   = 'leave_db';
+$db   = 'koketsoDB';
 $user = 'root';
 $pass = '';
 

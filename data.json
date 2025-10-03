@@ -1,0 +1,8 @@
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "department": "Engineering",
+  "designation": "Software Developer",
+  "email": "john.doe@company.com",
+  "password": "SecurePassword123!"
+}

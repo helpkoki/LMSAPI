@@ -1,0 +1,256 @@
+# User Signup API Documentation
+
+## Overview
+This API endpoint allows new users to create an account in the system. Users are automatically assigned an "employee" role upon registration.
+
+---
+
+## Endpoint
+
+### Create New User Account
+
+**POST** `http://localhost/LMSAPI/public/signup.php` 
+
+Creates a new user account with the provided information.
+
+#### Authentication
+No authentication required for this endpoint.
+
+---
+
+## Request
+
+### Headers
+```
+Content-Type: application/json
+```
+
+### Request Body
+
+| Field | Type | Required | Description |
+|-------|------|----------|-------------|
+| `first_name` | string | Yes | User's first name |
+| `last_name` | string | Yes | User's last name |
+| `department` | string | Yes | Department name or identifier |
+| `designation` | string | Yes | User's job designation/title |
+| `email` | string | Yes | User's email address (must be unique) |
+| `password` | string | Yes | User's password (will be hashed) |
+
+### Example Request
+
+```json
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "department": "Engineering",
+  "designation": "Software Developer",
+  "email": "john.doe@company.com",
+  "password": "SecurePassword123!"
+}
+```
+
+### cURL Example
+```bash
+curl -X POST http://localhost/LMSAPI/public/signup.php \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "John",
+    "last_name": "Doe",
+    "department": "Engineering",
+    "designation": "Software Developer",
+    "email": "john.doe@company.com",
+    "password": "SecurePassword123!"
+  }'
+
+```
+
+### Httpie Example
+```bash
+http POST http://localhost/LMSAPI/public/signup.php ^
+  Content-Type:application/json ^
+  first_name:=John ^
+  last_name:=Doe ^
+  department:=Engineering ^
+  designation:="Software Developer" ^
+  email:=john.doe@company.com ^
+  password:="SecurePassword123!"
+
+```
+
+### JavaScript Example
+```javascript
+const response = await fetch('http://localhost/LMSAPI/public/signup.php', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify({
+    first_name: 'John',
+    last_name: 'Doe',
+    department: 'Engineering',
+    designation: 'Software Developer',
+    email: 'john.doe@company.com',
+    password: 'SecurePassword123!'
+  })
+});
+
+const data = await response.json();
+console.log(data);
+```
+
+### PHP Example
+```php
+$data = [
+    'first_name' => 'John',
+    'last_name' => 'Doe',
+    'department' => 'Engineering',
+    'designation' => 'Software Developer',
+    'email' => 'john.doe@company.com',
+    'password' => 'SecurePassword123!'
+];
+
+$ch = curl_init('http://localhost/LMSAPI/public/signup.php');
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+
+$response = curl_exec($ch);
+curl_close($ch);
+
+$result = json_decode($response, true);
+```
+
+---
+
+## Response
+
+### Success Response
+
+**Status Code:** `200 OK`
+
+```json
+{
+  "message": "Signup successful"
+}
+```
+
+### Error Responses
+
+#### Missing Required Field
+
+**Status Code:** `400 Bad Request`
+
+```json
+{
+  "error": "Missing field: email"
+}
+```
+
+Possible missing fields:
+- `first_name`
+- `last_name`
+- `department`
+- `designation`
+- `email`
+- `password`
+
+#### Database Error
+
+**Status Code:** `500 Internal Server Error` (typically)
+
+Response format may vary depending on error handling configuration.
+
+---
+
+## Business Logic
+
+### Automatic User Configuration
+- **User ID**: Automatically generated UUID (v4)
+- **Full Name**: Concatenation of `first_name` + space + `last_name`
+- **Role**: Automatically set to `employee`
+- **Status**: Account is active by default (`is_active = true`)
+- **Join Date**: Set to current date
+- **Password**: Hashed using bcrypt algorithm
+- **Timestamps**: `created_at` and `updated_at` set to current timestamp
+
+### Database Fields
+The following fields are stored in the `users` table:
+- `id` - UUID
+- `email` - User's email address
+- `full_name` - Combined first and last name
+- `role` - Fixed as 'employee'
+- `department_id` - Currently set to NULL
+- `join_date` - Date of registration
+- `is_active` - Boolean (true by default)
+- `created_at` - Timestamp of account creation
+- `updated_at` - Timestamp of last update
+
+---
+
+## Notes
+
+### Security Considerations
+- Passwords are hashed using `PASSWORD_BCRYPT` before storage
+- Never store plain text passwords
+- Consider implementing email verification
+- Consider adding rate limiting to prevent abuse
+- Validate email format before processing
+
+### Current Limitations
+1. **No email uniqueness check**: The endpoint may fail if email already exists (database constraint)
+2. **Department field not used**: The `department` field in request is not stored in database
+3. **Designation field not used**: The `designation` field in request is not stored in database
+4. **No password validation**: No checks for password strength or requirements
+5. **No email validation**: Email format is not validated before insertion
+
+### Recommended Improvements
+- Add duplicate email check before insertion
+- Implement password strength requirements
+- Add email format validation
+- Store `designation` field in database
+- Link `department` to actual `department_id`
+- Add email verification workflow
+- Return user ID in success response
+- Implement proper error handling for database errors
+- Add HTTPS enforcement
+
+---
+
+## Error Handling
+
+### Common Errors
+
+| Error | Cause | Solution |
+|-------|-------|----------|
+| Missing field errors | Required field not provided | Ensure all required fields are in request body |
+| Database insertion fails | Duplicate email or constraint violation | Use a unique email address |
+| 500 Server Error | Database connection or query issues | Check database connectivity and configuration |
+
+---
+
+## Testing
+
+### Valid Request Test
+```bash
+curl -X POST http://localhost/signup.php \
+  -H "Content-Type: application/json" \
+  -d '{"first_name":"Test","last_name":"User","department":"IT","designation":"Developer","email":"test@example.com","password":"Test123456"}'
+```
+
+Expected: `{"message":"Signup successful"}`
+
+### Invalid Request Test (Missing Field)
+```bash
+curl -X POST http://localhost/signup.php \
+  -H "Content-Type: application/json" \
+  -d '{"first_name":"Test","last_name":"User"}'
+```
+
+Expected: `{"error":"Missing field: department"}` with HTTP 400
+
+---
+
+## Support
+
+For issues or questions, please contact your system administrator or development team.

@@ -15,7 +15,7 @@ foreach ($required as $field) {
 }
 
 // Prepare data
-$id = uuid_create(UUID_TYPE_RANDOM); // Requires ext-uuid
+$user_id = uniqid('user_', true);
 $full_name = $data['first_name'] . ' ' . $data['last_name'];
 $email = $data['email'];
 $password_hash = password_hash($data['password'], PASSWORD_BCRYPT);
@@ -24,7 +24,7 @@ $department = $data['department'];
 $is_active = true;
 
 // Insert user
-$sql = "INSERT INTO users (id, email, full_name, role, department_id, join_date, is_active, created_at, updated_at)
+$sql = "INSERT INTO users (id, email, fname, role, department_id, join_date, is_active, created_at, updated_at)
         VALUES (:id, :email, :full_name, :role, NULL, CURRENT_DATE, :is_active, NOW(), NOW())";
 
 $stmt = $pdo->prepare($sql);
